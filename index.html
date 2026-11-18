@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A2Z Mart | Kalyanadurgam</title><style>
+:root{--green:#087443;--dark:#123d2c;--bg:#f5f8f5}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#18372b}
+header{position:sticky;top:0;background:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px #0001;z-index:2}
+.logo{background:var(--green);color:white;border-radius:16px;padding:14px;font-weight:bold}.brand{flex:1}.brand b{font-size:23px}.brand small{display:block;color:#64756c;margin-top:4px}
+button{cursor:pointer;border:0;border-radius:12px;padding:11px 14px;font-size:15px}.plain{background:#eef5f0;color:var(--dark)}.primary{background:var(--green);color:white}
+main{max-width:1000px;margin:auto;padding:18px}.hero{background:#e3f2e8;border-radius:20px;padding:22px;margin:8px 0 18px}.hero h1{margin:0 0 8px;font-size:27px}.search{width:100%;padding:14px;border:1px solid #d5e0d8;border-radius:12px;font-size:16px;margin:12px 0}
+.categories{display:flex;gap:8px;overflow:auto;padding:4px 0 14px}.categories button{white-space:nowrap;background:#e8f0eb}.categories button.active{background:var(--green);color:white}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.product{background:white;border-radius:16px;padding:14px;box-shadow:0 2px 9px #0000000a}.pic{font-size:35px;background:#f1f6f2;border-radius:12px;text-align:center;padding:16px}.product h3{font-size:16px;margin:10px 0 5px}.muted{color:#718078;font-size:13px}.price{font-weight:bold;margin:10px 0}.product button{width:100%}
+.cartline{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #e7ece8}.modal{position:fixed;inset:0;background:#0006;display:none;align-items:center;justify-content:center;padding:14px;z-index:10}.modal.show{display:flex}.panel{background:white;border-radius:22px;width:min(100%,560px);max-height:90vh;overflow:auto;padding:20px}.panelhead{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ddd;padding-bottom:12px}.panelhead h2{margin:0;font-size:23px}.close{width:44px;height:44px;border-radius:50%;font-size:24px;background:#eff4f0}.field{margin:14px 0}.field label{display:block;font-weight:bold;margin-bottom:7px}.field input,.field textarea,.field select{width:100%;padding:14px;border:1px solid #d6dfd9;border-radius:12px;font-size:16px}.field textarea{min-height:90px}.notice{background:#fff7e5;color:#785a20;padding:12px;border-radius:12px;font-size:14px}.full{width:100%;margin-top:12px;padding:15px}.empty{text-align:center;padding:25px;color:#65746c}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style></head><body>
+<header><div class="logo">A2Z</div><div class="brand"><b>A2Z Mart</b><small>Kalyanadurgam</small></div><button class="plain" id="langBtn">తెలుగు</button><button class="plain" id="cartBtn">🛒 Cart <b id="count">0</b></button></header>
+<main><section class="hero"><h1>Everything you need, delivered.</h1><div>Groceries • Fresh chicken • Eggs</div></section>
+<input class="search" id="search" placeholder="Search products...">
+<nav class="categories" id="cats"><button class="active" data-cat="All">All</button><button data-cat="Grocery">Grocery</button><button data-cat="Chicken">Chicken</button><button data-cat="Eggs">Eggs</button></nav>
+<div class="grid" id="products"></div></main>
+<div class="modal" id="cartModal" aria-hidden="true"><section class="panel"><div class="panelhead"><h2>Your Cart</h2><button class="close" data-close="cartModal" aria-label="Close">×</button></div><div id="cartItems"></div><div id="cartTotal" class="price"></div><button class="primary full" id="checkoutBtn">Continue to delivery details</button></section></div>
+<div class="modal" id="checkoutModal" aria-hidden="true"><section class="panel"><div class="panelhead"><h2>Delivery details</h2><button class="close" data-close="checkoutModal" aria-label="Close">×</button></div>
+<form id="orderForm"><div class="field"><label>Full name</label><input id="name" required></div><div class="field"><label>Mobile number</label><input id="phone" inputmode="numeric" pattern="[0-9]{10}" placeholder="10-digit number" required></div><div class="field"><label>Delivery address</label><textarea id="address" required placeholder="House number, street, area"></textarea>
+<button type="button" class="plain full" id="locBtn">📍 Use my current location</button>
+<div id="locStatus" class="muted" aria-live="polite">Allow location permission so the delivery boy can find your address.</div></div><div class="field"><label>Payment method</label><select id="payment"><option>Cash on Delivery</option><option>UPI on delivery (confirm with store)</option></select></div><p class="notice">Online payment is not integrated. Please pay only after confirming with the store.</p><button class="primary full" type="submit">Create order message</button></form></section></div>
+<script>
+const products = [["Rice 5 kg", "Grocery", 420], ["Rice 1 kg", "Grocery", 85], ["Toor Dal 1 kg", "Grocery", 160], ["Moong Dal 1 kg", "Grocery", 130], ["Chana Dal 1 kg", "Grocery", 95], ["Urad Dal 1 kg", "Grocery", 145], ["Wheat Flour 1 kg", "Grocery", 48], ["Sugar 1 kg", "Grocery", 48], ["Salt 1 kg", "Grocery", 25], ["Cooking Oil 1 L", "Grocery", 145], ["Sunflower Oil 1 L", "Grocery", 155], ["Groundnut Oil 1 L", "Grocery", 190], ["Tea Powder 250 g", "Grocery", 110], ["Coffee 100 g", "Grocery", 95], ["Red Chilli Powder 100 g", "Grocery", 35], ["Turmeric Powder 100 g", "Grocery", 30], ["Coriander Powder 100 g", "Grocery", 32], ["Mustard Seeds 100 g", "Grocery", 22], ["Cumin Seeds 100 g", "Grocery", 45], ["Tamarind 500 g", "Grocery", 70], ["Poha 500 g", "Grocery", 40], ["Rava 1 kg", "Grocery", 55], ["Maida 1 kg", "Grocery", 48], ["Besan 500 g", "Grocery", 55], ["Biscuits Pack", "Grocery", 20], ["Noodles Pack", "Grocery", 15], ["Bath Soap", "Grocery", 35], ["Detergent 1 kg", "Grocery", 110], ["Dishwash Bar", "Grocery", 20], ["Toothpaste", "Grocery", 55], ["Whole Chicken 1 kg", "Chicken", 220], ["Skinless Chicken 1 kg", "Chicken", 260], ["Chicken Curry Cut 1 kg", "Chicken", 250], ["Chicken Breast 1 kg", "Chicken", 290], ["Chicken Legs 1 kg", "Chicken", 280], ["Chicken Wings 1 kg", "Chicken", 220], ["Country Chicken 1 kg", "Chicken", 550], ["Chicken Liver 500 g", "Chicken", 90], ["Chicken Gizzard 500 g", "Chicken", 100], ["Chicken Mince 500 g", "Chicken", 160], ["White Eggs 6 pcs", "Eggs", 42], ["White Eggs 12 pcs", "Eggs", 84], ["Brown Eggs 6 pcs", "Eggs", 54], ["Brown Eggs 12 pcs", "Eggs", 108], ["Country Eggs 6 pcs", "Eggs", 72], ["Country Eggs 12 pcs", "Eggs", 144], ["Egg Tray 30 pcs", "Eggs", 210], ["Eggs 3 pcs", "Eggs", 22], ["Boiled Eggs 2 pcs", "Eggs", 30], ["Eggs 10 pcs", "Eggs", 70]];
+const cart = {};
+let category='All';
+const $=id=>document.getElementById(id);
+function money(n){return '₹'+n}
+let customerLocation = null;
+$('locBtn').addEventListener('click',()=>{
+ const status=$('locStatus');
+ if(!navigator.geolocation){status.textContent='This browser does not support location. Please enter your address manually.';return;}
+ status.textContent='Getting your location… Please allow location access.';
+ navigator.geolocation.getCurrentPosition(pos=>{
+   customerLocation={lat:pos.coords.latitude,lng:pos.coords.longitude};
+   status.textContent='Location captured ✓ Google Maps link will be sent with your order.';
+ },err=>{
+   status.textContent=err.code===1?'Location permission denied. Allow location access in Chrome settings, or enter the address manually.':'Could not get location. Turn on GPS and try again, or enter the address manually.';
+ },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+});
+
+function render(){
+ const q=$('search').value.toLowerCase();
+ $('products').innerHTML=products.filter(p=>(category==='All'||p[1]===category)&&p[0].toLowerCase().includes(q)).map((p,i)=>`<article class="product"><div class="pic">${p[1]==='Chicken'?'🍗':p[1]==='Eggs'?'🥚':'🛍️'}</div><h3>${p[0]}</h3><div class="muted">${p[1]}</div><div class="price">${money(p[2])}</div><button class="primary" data-add="${products.indexOf(p)}">Add</button></article>`).join('');
+}
+function openModal(id){$(id).classList.add('show');$(id).setAttribute('aria-hidden','false')}
+function closeModal(id){$(id).classList.remove('show');$(id).setAttribute('aria-hidden','true')}
+function updateCart(){
+ let entries=Object.entries(cart).filter(([k,v])=>v>0),count=entries.reduce((s,[k,v])=>s+v,0),total=entries.reduce((s,[k,v])=>s+products[+k][2]*v,0);
+ $('count').textContent=count;
+ $('cartItems').innerHTML=entries.length?entries.map(([k,v])=>`<div class="cartline"><span>${products[+k][0]}<br><small>${money(products[+k][2])} × ${v}</small></span><span><button data-dec="${k}">−</button> ${v} <button data-inc="${k}">+</button></span></div>`).join(''):'<div class="empty">Your cart is empty</div>';
+ $('cartTotal').textContent=entries.length?'Total: '+money(total):'';
+ $('checkoutBtn').disabled=!entries.length;
+}
+$('products').addEventListener('click',e=>{let b=e.target.closest('[data-add]');if(b){let k=b.dataset.add;cart[k]=(cart[k]||0)+1;updateCart()}});
+$('cartItems').addEventListener('click',e=>{let d=e.target.closest('[data-dec]'),i=e.target.closest('[data-inc]');if(d){let k=d.dataset.dec;cart[k]--;if(cart[k]<=0)delete cart[k];updateCart()}if(i){let k=i.dataset.inc;cart[k]++;updateCart()}});
+$('cartBtn').onclick=()=>{updateCart();openModal('cartModal')};
+$('checkoutBtn').onclick=()=>{closeModal('cartModal');openModal('checkoutModal')};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-close]');if(b)closeModal(b.dataset.close);if(e.target.classList.contains('modal'))closeModal(e.target.id)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal('checkoutModal');closeModal('cartModal')}});
+$('search').addEventListener('input',render);
+$('cats').addEventListener('click',e=>{let b=e.target.closest('[data-cat]');if(!b)return;category=b.dataset.cat;document.querySelectorAll('[data-cat]').forEach(x=>x.classList.toggle('active',x===b));render()});
+$('orderForm').addEventListener('submit',e=>{e.preventDefault();let lines=Object.entries(cart).filter(([k,v])=>v>0).map(([k,v])=>`${products[+k][0]} x ${v} = ${money(products[+k][2]*v)}`).join('%0A');let total=Object.entries(cart).reduce((s,[k,v])=>s+products[+k][2]*v,0);let mapLink=customerLocation?`https://www.google.com/maps?q=${customerLocation.lat},${customerLocation.lng}`:'Location not shared - please call customer / use typed address';let msg=`A2Z Mart Order%0AName: ${$('name').value}%0APhone: ${$('phone').value}%0ADelivery address: ${$('address').value}%0ACustomer location: ${mapLink}%0APayment: ${$('payment').value}%0A${lines}%0ATotal: ${money(total)}`;window.open('https://wa.me/917416887291?text='+encodeURIComponent(decodeURIComponent(msg)),'_blank')});
+render();updateCart();
+</script></body></html>
